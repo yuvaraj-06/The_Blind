@@ -4,6 +4,7 @@ import time
 import glob
 from textblob import TextBlob
 import goslate
+from playsound import playsound
 from PIL import Image
 import pytesseract
 import cv2
@@ -24,10 +25,11 @@ net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
 r = sr.Recognizer()  
 def SpeakText(command):  
 	engine = pyttsx3.init() 
+	engine.setProperty('rate', 150) 
 	engine.say(command) 
 	engine.runAndWait() 
 
-SpeakText("Please Say Your Query")
+SpeakText("Please Say Your Query for read more say one and for blind mode say two")
 def lis():
 	s=True
 	while(s):	  
@@ -40,7 +42,7 @@ def lis():
 						print("Did you say "+MyText) 
 						s=False
 						SpeakText(MyText) 
-						return MyText
+						return str(MyText)
 			except sr.RequestError as e: 
 				print("Could not request results; {0}".format(e)) 
 			except sr.UnknownValueError: 
@@ -49,7 +51,7 @@ def lis():
 out=lis()
 print(out)
 for img in glob.glob("C:\\Users\\tanka\\object detection\\t1.png"):
-	if out=="blind mode":
+	if out=="two" or out=="2":
 				image = cv2.imread(img)
 				(H, W) = image.shape[:2]
 
@@ -119,17 +121,23 @@ for img in glob.glob("C:\\Users\\tanka\\object detection\\t1.png"):
 				SpeakText(a)
 				cv2.imshow("Image", image)
 				cv2.waitKey(0)
-	if out=="read mode":
-		SpeakText("which language Do You Want")
-		dic={'Latin': 'la', 'Filipino': 'tl', 'Spanish': 'es', 'Russian': 'ru', 'Swahili': 'sw', 'Hungarian': 'hu', 'Gujarati' : 'gu', 'Myanmar (Burmese)': 'my', 'Telugu': 'te', 'Sinhala': 'si', 'Albanian': 'sq', 'Marathi': 'mr', 'Dutch': 'n l', 'Bengali': 'bn', 'Vietnamese': 'vi', 'Korean': 'ko', 'Kannada': 'kn', 'Turkish': 'tr', 'Czech': 'cs', 'Croatia n': 'hr', 'Icelandic': 'is', 'German': 'de', 'Welsh': 'cy', 'Estonian': 'et', 'Thai': 'th', 'Nepali': 'ne', 'Frenc h': 'fr', 'Danish': 'da', 'Portuguese': 'pt', 'Japanese': 'ja', 'Norwegian': 'no', 'Armenian': 'hy', 'Catalan': 'c a', 'Romanian': 'ro', 'Indonesian': 'id', 'Swedish': 'sv', 'Malayalam': 'ml', 'Hindi': 'hi', 'Arabic': 'ar', 'Serb ian': 'sr', 'Macedonian': 'mk', 'Khmer': 'km', 'Sundanese': 'su', 'Javanese': 'jw', 'Bosnian': 'bs', 'Greek': 'el' , 'Tamil': 'ta', 'Finnish': 'fi', 'Urdu': 'ur', 'Chinese': 'zh-CN', 'English': 'en', 'Polish': 'pl', 'Italian': 'i t', 'Esperanto': 'eo', 'Slovak': 'sk', 'Afrikaans': 'af', 'Ukrainian': 'uk', 'Latvian': 'lv'}
+	if out=="one" or out=="1":
+		SpeakText("which language Do You Want for english say one for Telugu say two for hindi say three for tamil say four")
 		out1=lis()
+		if out1=="one" or out1=="1":
+			out1="English"
+		elif out1=="tu" or out1=="2":
+			out1="Telugu" 
+		elif out1=="three" or out1=="3":
+			out1="Hindi" 
+		elif out1=="four" or out1=="4":
+			out1="Tamil" 
 		print(out1)
-		out1=out1.capitalize()
+		dic={'Latin': 'la', 'Filipino': 'tl', 'Spanish': 'es', 'Russian': 'ru', 'Swahili': 'sw', 'Hungarian': 'hu', 'Gujarati' : 'gu', 'Myanmar (Burmese)': 'my', 'Telugu': 'te', 'Sinhala': 'si', 'Albanian': 'sq', 'Marathi': 'mr', 'Dutch': 'n l', 'Bengali': 'bn', 'Vietnamese': 'vi', 'Korean': 'ko', 'Kannada': 'kn', 'Turkish': 'tr', 'Czech': 'cs', 'Croatia n': 'hr', 'Icelandic': 'is', 'German': 'de', 'Welsh': 'cy', 'Estonian': 'et', 'Thai': 'th', 'Nepali': 'ne', 'Frenc h': 'fr', 'Danish': 'da', 'Portuguese': 'pt', 'Japanese': 'ja', 'Norwegian': 'no', 'Armenian': 'hy', 'Catalan': 'c a', 'Romanian': 'ro', 'Indonesian': 'id', 'Swedish': 'sv', 'Malayalam': 'ml', 'Hindi': 'hi', 'Arabic': 'ar', 'Serb ian': 'sr', 'Macedonian': 'mk', 'Khmer': 'km', 'Sundanese': 'su', 'Javanese': 'jw', 'Bosnian': 'bs', 'Greek': 'el' , 'Tamil': 'ta', 'Finnish': 'fi', 'Urdu': 'ur', 'Chinese': 'zh-CN', 'English': 'en', 'Polish': 'pl', 'Italian': 'i t', 'Esperanto': 'eo', 'Slovak': 'sk', 'Afrikaans': 'af', 'Ukrainian': 'uk', 'Latvian': 'lv'}
 		if out1 in list(dic.keys()):
 			lan=dic[out1]
 		else:
 			break
-	    
 		image = cv2.imread(img)
 		gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 		gray = cv2.threshold(gray, 0, 255,cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
@@ -139,13 +147,14 @@ for img in glob.glob("C:\\Users\\tanka\\object detection\\t1.png"):
 		pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 		text = pytesseract.image_to_string(Image.open(filename))
 		os.remove(filename)
-		print(text)
 		summary = TextBlob(text)
 		print(summary,lan)
 		if lan!='en':
-				summary= summary.translate(from_lang='en',to=lan)
-				print(summary)
-		SpeakText(summary)
+			summary= summary.translate(from_lang='en',to=lan)
+			print(summary)
+		t=gTTS(str(summary),lang=lan)
+		t.save("audio.mp3")
+		playsound('audio.mp3')
 		cv2.imshow("Image", image)
 		cv2.imshow("Output", gray)
 		cv2.waitKey(0)
