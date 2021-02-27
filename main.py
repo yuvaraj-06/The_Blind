@@ -124,6 +124,7 @@ for img in glob.glob("C:\\Users\\tanka\\object detection\\t1.png"):
 	if out=="one" or out=="1":
 		SpeakText("which language Do You Want for english say one for Telugu say two for hindi say three for tamil say four")
 		out1=lis()
+		out1="three"
 		if out1=="one" or out1=="1":
 			out1="English"
 		elif out1=="tu" or out1=="2":
